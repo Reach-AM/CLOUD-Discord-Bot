@@ -23,7 +23,7 @@ async def on_message(message):
   if msg.startswith('$'):
     msg = msg[1:].lower()
     if msg.startswith('hello'):
-      await message.channel.send('Hello ' + message.author + '!')
+      await message.channel.send('Hello ' + str(message.author) + '!')
     elif msg.startswith('play ') or msg.startswith('p '):
       user = message.author
       voice_channel=user.voice
