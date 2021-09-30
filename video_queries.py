@@ -1,12 +1,16 @@
-import urllib.request
-import re
+import discord
+import asyncio
 import pafy
 
-def yt_query(prompt):
-  query = prompt
-  query = query.replace(' ','+')
-  html = urllib.request.urlopen('https://www.youtube.com/results?search_query=' + query)
-  video_ids = re.findall(r'watch\?v=(\S{11})', html.read().decode())
-  url = 'https://www.youtube.com/watch?v=' + video_ids[0]
-  video = pafy.new(url)
-  return video.getbest()
+class YTDLSource(discord.PCMVolumeTransformer):
+    def __init__(self, source, *, data, volume=0.5):
+        super().__init__(source, volume)
+        self.data = data
+        self.title = data.get('title')
+        self.url = ""
+
+    @classmethod
+    async def from_url(cls, url, *, loop=None, stream=False):
+        loop = loop or asyncio.get_event_loop()
+        filename = pafy.new(url)
+        return filename.getbest()

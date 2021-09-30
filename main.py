@@ -1,75 +1,80 @@
-import os
-import discord
-from discord.utils import get
 import asyncio
+import discord
+import os
+import youtube_dl
+from discord.ext import commands#, tasks
+from video_queries import YTDLSource
 
-from keep_alive import keep_alive
-from video_queries import yt_query
-#from discord.ext.commands import Bot
+intents = discord.Intents().all()
+bot = commands.Bot(command_prefix='-',intents=intents)
+tok = open("tok.txt", "r")
 
-client = discord.Client()
-
-#bot = Bot(command_prefix="!")
-
-@client.event
+@bot.event
 async def on_ready():
-  print('Logged in as {0.user}'.format(client))
+  print('Logged in as {0.user}'.format(bot))
 
-@client.event
+@bot.command(name='play_song', help='To play song')
+async def play(ctx, url):
+   server = ctx.message.guild
+   voice_channel = server.voice_client
+
+   if not voice_channel:
+      if not ctx.message.author.voice:
+          await ctx.send("{} is not connected to a voice channel".format(ctx.message.author.name))
+          return
+      else:
+          channel = ctx.message.author.voice.channel
+      await channel.connect()
+      voice_channel = server.voice_client
+
+   if voice_channel:
+      async with ctx.typing():
+          filename = await YTDLSource.from_url(url, loop=bot.loop)
+	  #voice_channel.play(discord.FFmpegPCMAudio(filename.url))
+          voice_channel.play(discord.FFmpegPCMAudio(executable="C:/Users/RALONSOM/Downloads/ffmpeg-2021-09-27-git-b786bc7433-essentials_build/ffmpeg-2021-09-27-git-b786bc7433-essentials_build/bin/ffmpeg.exe", source=filename.url))
+      await ctx.send('**Now playing:** {}'.format(filename.title))
+   else: print('No conectado al canal de voz')
+
+@bot.command(name='pause', help='This command pauses the song')
+async def pause(ctx):
+    voice_client = ctx.message.guild.voice_client
+    if voice_client.is_playing():
+        voice_client.pause()
+    else:
+        await ctx.send("The bot is not playing anything at the moment.")
+
+@bot.command(name='resume', help='Resumes the song')
+async def resume(ctx):
+    voice_client = ctx.message.guild.voice_client
+    if voice_client.is_paused():
+        voice_client.resume()
+    else:
+        await ctx.send("The bot was not playing anything before this. Use play_song command")
+
+@bot.command(name='stop', help='Stops the song')
+async def stop(ctx):
+    voice_client = ctx.message.guild.voice_client
+    if voice_client.is_playing():
+        voice_client.stop()
+    else:
+        await ctx.send("The bot is not playing anything at the moment.")
+
+@bot.command(name='disconnect', help='To make the bot leave the voice channel')
+async def leave(ctx):
+    voice_client = ctx.message.guild.voice_client
+    if voice_client.is_connected():
+        await voice_client.disconnect()
+    else:
+        await ctx.send("The bot is not connected to a voice channel.")
+
+@bot.event
 async def on_message(message):
-  user_guild = message.guild
-  msg = message.content
-  if message.author == client.user:
-    return
-  
-  if msg.startswith('$'):
-    msg = msg[1:].lower()
-    if msg.startswith('hello'):
-      await message.channel.send('Hello ' + str(message.author) + '!')
-    elif msg.startswith('play ') or msg.startswith('p '):
-      user = message.author
-      voice_channel=user.voice
-      if voice_channel.channel:
-        voice_channel=user.voice.channel
-        # Get url
-        if msg.startswith('play '):query = message.content[5:]
-        else: query = message.content[2:]
-        sound = yt_query(query)
-        source = discord.FFmpegPCMAudio(sound.url)
-        # Check voice channel
-        if (not get(client.voice_clients)) or voice_channel != get(client.voice_clients, guild=user_guild).channel:
-          await voice_channel.connect()
-        voice = get(client.voice_clients, guild=user_guild)
-        if voice and voice.is_playing(): 
-          voice.stop() 
-        voice.play(source)
-        await message.channel.send('Playing ' + sound.title)
-        while voice.is_playing():
-            await asyncio.sleep(1)
-        voice.stop()
-      else:
-          await message.channel.send('User is not in a channel.')
-    elif msg.startswith('stop') or msg.startswith('s'):
-      voice = get(client.voice_clients, guild=user_guild)
-      if voice and voice.is_connected() and voice.is_playing():
-        await message.channel.send('Music stopped')
-        voice.stop()
-      else:
-        await message.channel.send('No music was playing')
-    elif msg.startswith('pause'):
-      voice = get(client.voice_clients, guild=user_guild)
-      if voice and voice.is_connected() and voice.is_playing():
-        await message.channel.send('Music paused')
-        voice.pause()
-      else:
-        await message.channel.send('No music was playing')
-    elif msg.startswith('play'):
-      voice = get(client.voice_clients, guild=user_guild)
-      if voice and voice.is_connected() and voice.is_paused():
-        await message.channel.send('Music playing now')
-        voice.resume()
-      else:
-        await message.channel.send('No music in queue')
+    await bot.process_commands(message) 
+    if str(message.content).lower() == "hello":
+        await message.channel.send('Hi!')
 
-keep_alive()
-client.run(os.environ['token'])
+bot.run(tok.read())
+#bot.run(os.environ['token'])
+tok.close()
+
+print('Done!')
