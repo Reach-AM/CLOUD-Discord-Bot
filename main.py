@@ -3,7 +3,9 @@ import discord
 from discord.utils import get
 import asyncio
 
+from keep_alive import keep_alive
 from video_queries import yt_query
+#from discord.ext.commands import Bot
 
 client = discord.Client()
 
@@ -54,5 +56,20 @@ async def on_message(message):
         voice.stop()
       else:
         await message.channel.send('No music was playing')
+    elif msg.startswith('pause'):
+      voice = get(client.voice_clients, guild=user_guild)
+      if voice and voice.is_connected() and voice.is_playing():
+        await message.channel.send('Music paused')
+        voice.pause()
+      else:
+        await message.channel.send('No music was playing')
+    elif msg.startswith('play'):
+      voice = get(client.voice_clients, guild=user_guild)
+      if voice and voice.is_connected() and voice.is_paused():
+        await message.channel.send('Music playing now')
+        voice.resume()
+      else:
+        await message.channel.send('No music in queue')
 
-client.run('')
+keep_alive()
+client.run(os.environ['token'])
