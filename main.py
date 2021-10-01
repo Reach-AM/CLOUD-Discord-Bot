@@ -7,7 +7,7 @@ from video_queries import YTDLSource
 
 intents = discord.Intents().all()
 bot = commands.Bot(command_prefix='-',intents=intents)
-tok = open("tok.txt", "r")
+tok = open("../tok.txt", "r")
 
 @bot.event
 async def on_ready():
