@@ -32,7 +32,7 @@ async def play(ctx, *url):
       async with ctx.typing():
           filename = await YTDLSource.from_url(url)
           if voice_channel.is_playing(): voice_channel.stop()
-          voice_channel.play(discord.FFmpegPCMAudio(executable="C:/Users/RALONSOM/Downloads/ffmpeg-2021-09-27-git-b786bc7433-essentials_build/ffmpeg-2021-09-27-git-b786bc7433-essentials_build/bin/ffmpeg.exe", source=filename.url))
+          voice_channel.play(discord.FFmpegPCMAudio(filename.url))
       await ctx.send('**Now playing:** {}'.format(filename.title))
    else: print('No conectado al canal de voz')
 
