@@ -13,8 +13,9 @@ tok = open("tok.txt", "r")
 async def on_ready():
   print('Logged in as {0.user}'.format(bot))
 
-@bot.command(name='play_song', help='To play song')
-async def play(ctx, url):
+@bot.command(name='play', help='To play song')
+async def play(ctx, *url):
+   url = ' '.join(url)
    server = ctx.message.guild
    voice_channel = server.voice_client
 
@@ -29,8 +30,8 @@ async def play(ctx, url):
 
    if voice_channel:
       async with ctx.typing():
-          filename = await YTDLSource.from_url(url, loop=bot.loop)
-	  #voice_channel.play(discord.FFmpegPCMAudio(filename.url))
+          filename = await YTDLSource.from_url(url)
+          if voice_channel.is_playing(): voice_channel.stop()
           voice_channel.play(discord.FFmpegPCMAudio(executable="C:/Users/RALONSOM/Downloads/ffmpeg-2021-09-27-git-b786bc7433-essentials_build/ffmpeg-2021-09-27-git-b786bc7433-essentials_build/bin/ffmpeg.exe", source=filename.url))
       await ctx.send('**Now playing:** {}'.format(filename.title))
    else: print('No conectado al canal de voz')
@@ -70,11 +71,11 @@ async def leave(ctx):
 @bot.event
 async def on_message(message):
     await bot.process_commands(message) 
-    if str(message.content).lower() == "hello":
+    if str(message.content).lower() == "hello cloud":
         await message.channel.send('Hi!')
 
 bot.run(tok.read())
 #bot.run(os.environ['token'])
 tok.close()
 
-print('Done!')
+print('Bye!')
