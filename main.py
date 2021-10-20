@@ -70,7 +70,7 @@ async def leave(ctx):
 
 @bot.event
 async def on_message(message):
-    await bot.process_commands(message) 
+    await bot.process_commands(message)
     if str(message.content).lower() == "hello cloud":
         await message.channel.send('Hi!')
 
