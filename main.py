@@ -54,7 +54,7 @@ async def resume(ctx):
         
 @bot.command(name='tonto', help='Eres un tonto hijo')
 async def tonto(ctx):
-    ctx.invoke(bot.get_command('play'), query='https://www.youtube.com/watch?v=W_xn_mmORpc')
+    await ctx.invoke(bot.get_command('play'), query='https://www.youtube.com/watch?v=W_xn_mmORpc')
 
 @bot.command(name='stop', help='Stops the song')
 async def stop(ctx):
