@@ -53,7 +53,7 @@ async def resume(ctx):
         await ctx.send("The bot was not playing anything before this. Use play_song command")
         
 @bot.command(name='tonto', help='Eres un tonto hijo')
-async def tonto(ctx):
+async def tonto(slef, ctx):
     ctx.invoke(self.bot.get_command('play'), query='https://www.youtube.com/watch?v=W_xn_mmORpc')
 
 @bot.command(name='stop', help='Stops the song')
