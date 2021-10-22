@@ -37,41 +37,41 @@ async def play(ctx, *url):
 
 @bot.command(name='pause', help='This command pauses the song')
 async def pause(ctx):
-    voice_client = ctx.message.guild.voice_client
-    if voice_client.is_playing():
-        voice_client.pause()
-    else:
-        await ctx.send("The bot is not playing anything at the moment.")
+   voice_client = ctx.message.guild.voice_client
+   if voice_client.is_playing():
+      voice_client.pause()
+   else:
+      await ctx.send("The bot is not playing anything at the moment.")
 
 @bot.command(name='resume', help='Resumes the song')
 async def resume(ctx):
-    voice_client = ctx.message.guild.voice_client
-    if voice_client.is_paused():
-        voice_client.resume()
-    else:
-        await ctx.send("The bot was not playing anything before this. Use play_song command")
+   voice_client = ctx.message.guild.voice_client
+   if voice_client.is_paused():
+      voice_client.resume()
+   else:
+      await ctx.send("The bot was not playing anything before this. Use play_song command")
         
 @bot.command(name='tonto', help='Eres un tonto hijo')
 async def tonto(ctx):
-    url = ' '.join(url)
-    server = ctx.message.guild
-    voice_channel = server.voice_client
+   url = ' '.join(url)
+   server = ctx.message.guild
+   voice_channel = server.voice_client
     
-    if not voice_channel:
-        if not ctx.message.author.voice:
-            await ctx.send("{} is not connected to a voice channel".format(ctx.message.author.name))
-            return
-        else:
-            channel = ctx.message.author.voice.channel
-            await channel.connect()
-            voice_channel = server.voice_client
+   if not voice_channel:
+      if not ctx.message.author.voice:
+         await ctx.send("{} is not connected to a voice channel".format(ctx.message.author.name))
+         return
+      else:
+         channel = ctx.message.author.voice.channel
+         await channel.connect()
+         voice_channel = server.voice_client
             
-    if voice_channel:
-        async with ctx.typing():
-        filename = await YTDLSource.from_url('https://www.youtube.com/watch?v=W_xn_mmORpc')
-        if voice_channel.is_playing(): voice_channel.stop()
-            voice_channel.play(discord.FFmpegPCMAudio(filename.url))
-            await ctx.send('**Now playing:** {}'.format(filename.title))
+   if voice_channel:
+      async with ctx.typing():
+      filename = await YTDLSource.from_url('https://www.youtube.com/watch?v=W_xn_mmORpc')
+      if voice_channel.is_playing(): voice_channel.stop()
+         voice_channel.play(discord.FFmpegPCMAudio(filename.url))
+         await ctx.send('**Now playing:** {}'.format(filename.title))
 
 @bot.command(name='stop', help='Stops the song')
 async def stop(ctx):
