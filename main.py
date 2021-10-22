@@ -53,7 +53,6 @@ async def resume(ctx):
         
 @bot.command(name='tonto', help='Eres un tonto hijo')
 async def tonto(ctx):
-   url = ' '.join(url)
    server = ctx.message.guild
    voice_channel = server.voice_client
     
