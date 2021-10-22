@@ -70,7 +70,7 @@ async def tonto(ctx):
       async with ctx.typing():
          filename = await YTDLSource.from_url('https://www.youtube.com/watch?v=W_xn_mmORpc')
          if voice_channel.is_playing(): voice_channel.stop()
-            voice_channel.play(discord.FFmpegPCMAudio(filename.url))
+         voice_channel.play(discord.FFmpegPCMAudio(filename.url))
       await ctx.send('**Now playing:** {}'.format(filename.title))
 
 @bot.command(name='stop', help='Stops the song')
